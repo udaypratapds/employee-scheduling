@@ -34,7 +34,7 @@ public class DemoDataGenerator {
         LARGE
     }
 
-    private static final String[] FIRST_NAMES = { "Amy", "Beth", "Chad", "Dan", "Elsa", "Flo", "Gus", "Hugo" };
+    private static final String[] FIRST_NAMES = { "Amy", "Beth", "Chad", "Dan", "Elsa", "Flo" };
     // private static final String[] empSkills = { "Chopper", "Chopper", "Washer", "Washer", "Seller", "Seller", "Manager",
     //         "Manager" };
     // private static final String[] LAST_NAMES = { "Cole", "Fox", "Green", "Jones",
