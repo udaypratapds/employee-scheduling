@@ -49,14 +49,14 @@ public class DemoDataGenerator {
         int initialRosterLengthInDays = 30;
 
         LocalDate currentDate = LocalDate.now();
-
-        LocalDate startDate = currentDate.with(TemporalAdjusters.next(DayOfWeek.SUNDAY));
+        //LocalDate startDate = currentDate;
+       // LocalDate startDate = currentDate.with(TemporalAdjusters.next(DayOfWeek.SUNDAY));
 
         ScheduleState scheduleState = new ScheduleState();
-        scheduleState.setFirstDraftDate(startDate);
+        scheduleState.setFirstDraftDate(currentDate);
         scheduleState.setDraftLength(initialRosterLengthInDays);
         scheduleState.setPublishLength(7);
-        scheduleState.setLastHistoricDate(startDate.minusDays(7));
+        scheduleState.setLastHistoricDate(currentDate.minusDays(7));
 
         employeeSchedule.setScheduleState(scheduleState);
 
@@ -81,7 +81,7 @@ public class DemoDataGenerator {
         List<Shift> shifts = new LinkedList<>();
         int count = 0;
         for (int i = 0; i < initialRosterLengthInDays; i++) {
-            LocalDate date = startDate.plusDays(i);
+            LocalDate date = currentDate.plusDays(i);
             if (date.getDayOfWeek() != DayOfWeek.SUNDAY) {
                 Set<Employee> employeesWithAvailabilitiesOnDay = pickSubset(employees, random, 4, 3, 2, 1);
                 for (Employee employee : employeesWithAvailabilitiesOnDay) {
