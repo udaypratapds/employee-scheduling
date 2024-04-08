@@ -34,21 +34,20 @@ public class DemoDataGenerator {
         LARGE
     }
 
-    private static final String[] FIRST_NAMES = { "Amy", "Beth", "Chad", "Dan", "Elsa", "Flo", "Gus", "Hugo", "Ivy", "Jay" };
-    private static final String[] LAST_NAMES = { "Cole", "Fox", "Green", "Jones", "King", "Li", "Poe", "Rye", "Smith", "Watt" };
+    private static final String[] FIRST_NAMES = { "Amy", "Beth", "Chad", "Dan", "Elsa", "Flo", "Gus", "Hugo" };
+    // private static final String[] empSkills = { "Chopper", "Chopper", "Washer", "Washer", "Seller", "Seller", "Manager",
+    //         "Manager" };
+    // private static final String[] LAST_NAMES = { "Cole", "Fox", "Green", "Jones",
+    // "King", "Li", "Poe", "Rye", "Smith", "Watt" };
     private static final String[] REQUIRED_SKILLS = { "Seller", "General Staff" };
     private static final String[] OPTIONAL_SKILLS = { "Chopper", "Washer" };
-    private static final String[] LOCATIONS = { "Fruit-Store", "Meat-Store",};
-    private static final Duration SHIFT_LENGTH = Duration.ofHours(8);
-    private static final LocalTime MORNING_SHIFT_START_TIME = LocalTime.of(6, 0);
-    private static final LocalTime DAY_SHIFT_START_TIME = LocalTime.of(9, 0);
-    private static final LocalTime AFTERNOON_SHIFT_START_TIME = LocalTime.of(14, 0);
-    private static final LocalTime NIGHT_SHIFT_START_TIME = LocalTime.of(22, 0);
+    private static final String[] LOCATIONS = { "Fruit-Store", "Meat-Store", };
+    private static final Duration SHIFT_LENGTH = Duration.ofHours(7);
+    private static final LocalTime MORNING_SHIFT_START_TIME = LocalTime.of(8, 0);
+    private static final LocalTime AFTERNOON_SHIFT_START_TIME = LocalTime.of(15, 0);
 
     static final LocalTime[][] SHIFT_START_TIMES_COMBOS = {
             { MORNING_SHIFT_START_TIME, AFTERNOON_SHIFT_START_TIME },
-            { MORNING_SHIFT_START_TIME, AFTERNOON_SHIFT_START_TIME, NIGHT_SHIFT_START_TIME },
-            { MORNING_SHIFT_START_TIME, DAY_SHIFT_START_TIME, AFTERNOON_SHIFT_START_TIME, NIGHT_SHIFT_START_TIME },
     };
 
     Map<String, List<LocalTime>> locationToShiftStartTimeListMap = new HashMap<>();
@@ -76,14 +75,14 @@ public class DemoDataGenerator {
             shiftTemplateIndex = (shiftTemplateIndex + 1) % SHIFT_START_TIMES_COMBOS.length;
         }
 
-        List<String> namePermutations = joinAllCombinations(FIRST_NAMES, LAST_NAMES);
-        Collections.shuffle(namePermutations, random);
+        // List<String> namePermutations = joinAllCombinations(FIRST_NAMES, LAST_NAMES);
+        // Collections.shuffle(namePermutations, random);
 
         List<Employee> employees = new ArrayList<>();
-        for (int i = 0; i < 15; i++) {
+        for (int i = 0; i < FIRST_NAMES.length; i++) {
             Set<String> skills = pickSubset(List.of(OPTIONAL_SKILLS), random, 3, 1);
             skills.add(pickRandom(REQUIRED_SKILLS, random));
-            Employee employee = new Employee(namePermutations.get(i), skills);
+            Employee employee = new Employee(FIRST_NAMES[i], skills);
             employees.add(employee);
         }
         employeeSchedule.setEmployees(employees);
@@ -121,7 +120,8 @@ public class DemoDataGenerator {
         return shifts;
     }
 
-    private List<Shift> generateShiftForTimeslot(LocalDateTime timeslotStart, LocalDateTime timeslotEnd, String location,
+    private List<Shift> generateShiftForTimeslot(LocalDateTime timeslotStart, LocalDateTime timeslotEnd,
+            String location,
             Random random) {
         int shiftCount = 1;
 
@@ -165,7 +165,8 @@ public class DemoDataGenerator {
                     .plusDays(schedule.getScheduleState().getPublishLength() + i);
             for (Employee employee : employeesWithAvailabitiesOnDay) {
                 AvailabilityType availabilityType = pickRandom(AvailabilityType.values(), random);
-                availabilities.add(new Availability(Integer.toString(++countAvailability), employee, date, availabilityType));
+                availabilities
+                        .add(new Availability(Integer.toString(++countAvailability), employee, date, availabilityType));
             }
             shifts.addAll(generateShiftsForDay(date, random));
         }
