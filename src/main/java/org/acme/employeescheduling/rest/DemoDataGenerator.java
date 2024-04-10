@@ -8,6 +8,10 @@ import java.time.LocalTime;
 import java.time.temporal.TemporalAdjusters;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Supplier;
+import java.util.logging.ConsoleHandler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import jakarta.enterprise.context.ApplicationScoped;
 
@@ -20,6 +24,17 @@ import org.acme.employeescheduling.domain.Shift;
 
 @ApplicationScoped
 public class DemoDataGenerator {
+
+    public static  void main(String[] args){
+        logger.setLevel(Level.INFO);
+        ConsoleHandler consoleHandler = new ConsoleHandler();
+        logger.addHandler(consoleHandler);
+
+        DemoDataGenerator d = new DemoDataGenerator();
+        d.generateDemoData();
+    }
+
+    private static final Logger logger = Logger.getLogger(DemoDataGenerator.class.getName());
 
     public void addDraftShifts(EmployeeSchedule schedule) {
     }
@@ -69,12 +84,26 @@ public class DemoDataGenerator {
         }
 
         List<Employee> employees = new ArrayList<>();
-        for (int i = 0; i < FIRST_NAMES.length; i++) {
+        for(int i = 0; i < FIRST_NAMES.length; i++) {
             Set<String> skills = pickSubset(List.of(OPTIONAL_SKILLS), random, 3, 1);
             skills.add(pickRandom(REQUIRED_SKILLS, random));
             Employee employee = new Employee(FIRST_NAMES[i], skills);
             employees.add(employee);
         }
+
+//        for(Employee employee : employees){
+//            logger.log(Level.INFO, employee.getName());
+//            logger.log(Level.INFO, employee.getSkills());
+//        }
+
+//        for (Employee employee : employees) {
+//            logger.log(Level.INFO, employee.getName());
+//            logger.log(Level.INFO, employee.getSkills().toString());
+//        }
+
+        logger.log(Level.INFO, employees.toString());
+
+//        logger.log(Level.INFO, "kjdsfghjkghlkjfhd");
         employeeSchedule.setEmployees(employees);
 
         List<Availability> availabilities = new LinkedList<>();
@@ -84,8 +113,10 @@ public class DemoDataGenerator {
             LocalDate date = currentDate.plusDays(i);
             if (date.getDayOfWeek() != DayOfWeek.SUNDAY) {
                 Set<Employee> employeesWithAvailabilitiesOnDay = pickSubset(employees, random, 4, 3, 2, 1);
+                logger.log(Level.INFO, employeesWithAvailabilitiesOnDay.toString()+"employeesWithAvailabilitiesOnDay");
                 for (Employee employee : employeesWithAvailabilitiesOnDay) {
                     AvailabilityType availabilityType = pickRandom(AvailabilityType.values(), random);
+                    logger.log(Level.INFO, availabilityType.toString()+"availabilityType");
                     availabilities.add(new Availability(Integer.toString(count++), employee, date, availabilityType));
                 }
                 shifts.addAll(generateShiftsForDay(date, random));
