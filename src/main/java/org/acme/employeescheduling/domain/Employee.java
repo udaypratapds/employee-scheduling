@@ -4,12 +4,29 @@ import java.util.Objects;
 import java.util.Set;
 
 import ai.timefold.solver.core.api.domain.lookup.PlanningId;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import java.util.*;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Employee {
     @PlanningId
     private String name;
 
-    private Set<String> skills;
+    public String getPosition() {
+        return position;
+    }
+
+    public void setPosition(String position) {
+        this.position = position;
+    }
+
+    //    private String initials;
+    private String position;
+//    private List<Schedule> schedules;
+     private Set<String> skills;
+//    private String skills;
 
     public Employee() {
 
