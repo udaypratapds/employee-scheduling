@@ -11,12 +11,7 @@ import java.util.logging.Logger;
 
 import jakarta.enterprise.context.ApplicationScoped;
 
-import org.acme.employeescheduling.domain.Availability;
-import org.acme.employeescheduling.domain.AvailabilityType;
-import org.acme.employeescheduling.domain.Employee;
-import org.acme.employeescheduling.domain.EmployeeSchedule;
-import org.acme.employeescheduling.domain.ScheduleState;
-import org.acme.employeescheduling.domain.Shift;
+import org.acme.employeescheduling.domain.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.*;
 import java.util.logging.Logger;
@@ -42,20 +37,12 @@ public class DemoDataGenerator {
         SMALL,
         LARGE
     }
-
-    private static final String[] FIRST_NAMES = { "Amy", "Beth", "Chad", "Dan", "Elsa", "Flo" };
-
-    private static final String[] LOCATIONS = { "Fruit-Store", "Meat-Store" };
+    private static final String[] LOCATIONS = { "Fruit-Store"};
     private static final String[] EMP_NAMES = { "Amy", "Beth", "Chad", "Dan", "Elsa", "Flo"};
     private static final String[] empSkills = { "Chopper", "Chopper", "Washer", "Washer", "Seller", "Seller"};
 
-     private static final List<Set<String>> skillSet = new ArrayList<>();
-
-    // private static final String[] LAST_NAMES = { "Cole", "Fox", "Green", "Jones",
-    // "King", "Li", "Poe", "Rye", "Smith", "Watt" };
     private static final String[] REQUIRED_SKILLS = { "Seller", "General Staff" };
     private static final String[] OPTIONAL_SKILLS = { "Chopper", "Washer" };
-//    private static final String[] LOCATIONS = { "Fruit", "Meat", };
 
     private static final Duration SHIFT_LENGTH = Duration.ofHours(7);
     private static final LocalTime MORNING_SHIFT_START_TIME = LocalTime.of(8, 0);
@@ -81,7 +68,7 @@ public class DemoDataGenerator {
 
         List<Employee> employeeList = null;
         try {
-            File file = new File("C:\\Users\\DELL\\Desktop\\test.json");
+            File file = new File("D:\\DS\\Scheduling Project\\employee-scheduling\\src\\main\\resources\\test.json");
             if (file.exists()) {
                 Employee[] employees = objMapper.readValue(file, Employee[].class);
                 employeeList = Arrays.asList(employees);
@@ -90,8 +77,18 @@ public class DemoDataGenerator {
                 for (Employee employee : employeeList) {
                     logger.log(Level.INFO, employee.getName());
                     logger.log(Level.INFO, employee.getPosition());
-//                    System.out.println("Name: " + employee.getName());
-//                    System.out.println("Position: " + employee.getPosition());
+                    List<Schedule> schedules = employee.getSchedules();
+                    logger.log(Level.INFO,schedules.toString());
+                    for (Schedule schedule : schedules) {
+                        List<Eshift> shifts = schedule.getSchedule();
+                        for (Eshift shift : shifts) {
+                            logger.log(Level.INFO,shift.toString());
+                            logger.log(Level.INFO,shift.getDays().toString());
+                            logger.log(Level.INFO,shift.getStart_time());
+                            logger.log(Level.INFO,shift.getEnd_time());
+                        }
+                    }
+
                 }
             } else {
                 logger.log(Level.INFO, "File not found");
@@ -125,7 +122,6 @@ public class DemoDataGenerator {
 
         List<Employee> employees = new ArrayList<>();
 
-
         for (Employee emp : employeeList){
             Set<String> skills = new HashSet<>();
             skills.add(emp.getPosition());
@@ -133,26 +129,15 @@ public class DemoDataGenerator {
             employees.add(employee);
         }
             /*for (int i = 0; i < EMP_NAMES.length; i++) {
-//             Set<String> skills = pickSubset(List.of(OPTIONAL_SKILLS), random, 3, 1);
                 Set<String> skills = new HashSet<>();
                 skills.add(empSkills[i]);
                 Employee employee = new Employee(EMP_NAMES[i], skills);
                 employees.add(employee);
             }*/
 
-//        for(Employee employee : employees){
-//            logger.log(Level.INFO, employee.getName());
-//            logger.log(Level.INFO, employee.getSkills());
-//        }
 
-//        for (Employee employee : employees) {
-//            logger.log(Level.INFO, employee.getName());
-//            logger.log(Level.INFO, employee.getSkills().toString());
-//        }
 
-        logger.log(Level.INFO, employees.toString());
 
-//        logger.log(Level.INFO, "kjdsfghjkghlkjfhd");
         employeeSchedule.setEmployees(employees);
 
         List<Availability> availabilities = new LinkedList<>();
@@ -162,7 +147,7 @@ public class DemoDataGenerator {
             LocalDate date = currentDate.plusDays(i);
             if (date.getDayOfWeek() != DayOfWeek.SUNDAY) {
                 Set<Employee> employeesWithAvailabilitiesOnDay = pickSubset(employees, random, 4, 3, 2, 1);
-//                logger.log(Level.INFO, employeesWithAvailabilitiesOnDay.toString()+"employeesWithAvailabilitiesOnDay");
+                logger.log(Level.INFO, employeesWithAvailabilitiesOnDay.toString()+"employeesWithAvailabilitiesOnDay");
                 for (Employee employee : employeesWithAvailabilitiesOnDay) {
                     AvailabilityType availabilityType = pickRandom(AvailabilityType.values(), random);
 //                    logger.log(Level.INFO, availabilityType.toString()+"availabilityType");
@@ -183,6 +168,7 @@ public class DemoDataGenerator {
         List<Shift> shifts = new LinkedList<>();
         for (String location : LOCATIONS) {
             List<LocalTime> shiftStartTimes = locationToShiftStartTimeListMap.get(location);
+            logger.log(Level.INFO,shiftStartTimes.toString()+"shiftStartTimes");
             for (LocalTime shiftStartTime : shiftStartTimes) {
                 LocalDateTime shiftStartDateTime = date.atTime(shiftStartTime);
                 LocalDateTime shiftEndDateTime = shiftStartDateTime.plus(SHIFT_LENGTH);
@@ -197,20 +183,20 @@ public class DemoDataGenerator {
                                                  Random random) {
         int shiftCount = 1;
 
-        if (random.nextDouble() > 0.9) {
-            // generate an extra shift
-            shiftCount++;
-        }
+//        if (random.nextDouble() > 0.9) {
+//            // generate an extra shift
+//            shiftCount++;
+//        }
 
         List<Shift> shifts = new LinkedList<>();
         for (int i = 0; i < shiftCount; i++) {
-            String requiredSkill;
-            if (random.nextBoolean()) {
-                requiredSkill = pickRandom(REQUIRED_SKILLS, random);
-            } else {
-                requiredSkill = pickRandom(OPTIONAL_SKILLS, random);
-            }
-            shifts.add(new Shift(timeslotStart, timeslotEnd, location, requiredSkill));
+//            String requiredSkill;
+//            if (random.nextBoolean()) {
+//                requiredSkill = pickRandom(REQUIRED_SKILLS, random);
+//            } else {
+//                requiredSkill = pickRandom(OPTIONAL_SKILLS, random);
+//            }
+            shifts.add(new Shift(timeslotStart, timeslotEnd, location));
         }
         return shifts;
     }

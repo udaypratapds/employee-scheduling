@@ -14,6 +14,8 @@ public class Employee {
     @PlanningId
     private String name;
 
+    private String position;
+    private List<Schedule> schedules;
     public String getPosition() {
         return position;
     }
@@ -23,8 +25,16 @@ public class Employee {
     }
 
     //    private String initials;
-    private String position;
-//    private List<Schedule> schedules;
+
+
+    public List<Schedule> getSchedules() {
+        return schedules;
+    }
+
+    public void setSchedules(List<Schedule> schedules) {
+        this.schedules = schedules;
+    }
+
      private Set<String> skills;
 //    private String skills;
 

@@ -34,7 +34,6 @@ public class EmployeeSchedulingConstraintProvider implements ConstraintProvider 
     @Override
     public Constraint[] defineConstraints(ConstraintFactory constraintFactory) {
         return new Constraint[]{
-                requiredSkill(constraintFactory),
                 noOverlappingShifts(constraintFactory),
                 atLeast10HoursBetweenTwoShifts(constraintFactory),
                 oneShiftPerDay(constraintFactory),
@@ -44,12 +43,12 @@ public class EmployeeSchedulingConstraintProvider implements ConstraintProvider 
         };
     }
 
-    Constraint requiredSkill(ConstraintFactory constraintFactory) {
-        return constraintFactory.forEach(Shift.class)
-                .filter(shift -> !shift.getEmployee().getSkills().contains(shift.getRequiredSkill()))
-                .penalize(HardSoftScore.ONE_HARD)
-                .asConstraint("Missing required skill");
-    }
+//    Constraint requiredSkill(ConstraintFactory constraintFactory) {
+//        return constraintFactory.forEach(Shift.class)
+//                .filter(shift -> !shift.getEmployee().getSkills().contains(shift.getRequiredSkill()))
+//                .penalize(HardSoftScore.ONE_HARD)
+//                .asConstraint("Missing required skill");
+//    }
 
     Constraint noOverlappingShifts(ConstraintFactory constraintFactory) {
         return constraintFactory.forEachUniquePair(Shift.class, Joiners.equal(Shift::getEmployee),
