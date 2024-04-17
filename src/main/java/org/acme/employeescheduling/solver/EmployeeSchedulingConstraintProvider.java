@@ -66,7 +66,7 @@ public class EmployeeSchedulingConstraintProvider implements ConstraintProvider 
                 .penalize(HardSoftScore.ONE_HARD,
                         (firstShift, secondShift) -> {
                             int breakLength = (int) Duration.between(firstShift.getEnd(), secondShift.getStart()).toMinutes();
-                            return (10 * 60) - breakLength;
+                            return (12 * 60) - breakLength;
                         })
                 .asConstraint("At least 10 hours between 2 shifts");
     }

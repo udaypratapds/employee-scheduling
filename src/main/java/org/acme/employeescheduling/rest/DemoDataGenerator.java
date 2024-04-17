@@ -1,19 +1,15 @@
 package org.acme.employeescheduling.rest;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.enterprise.context.ApplicationScoped;
+import org.acme.employeescheduling.domain.*;
+
+import java.io.File;
 import java.time.*;
-import java.time.temporal.TemporalAdjusters;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Supplier;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import jakarta.enterprise.context.ApplicationScoped;
-
-import org.acme.employeescheduling.domain.*;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import java.io.*;
 import java.util.logging.Logger;
 
 @ApplicationScoped
@@ -37,12 +33,12 @@ public class DemoDataGenerator {
         SMALL,
         LARGE
     }
-    private static final String[] LOCATIONS = { "Fruit-Store"};
-    private static final String[] EMP_NAMES = { "Amy", "Beth", "Chad", "Dan", "Elsa", "Flo"};
-    private static final String[] empSkills = { "Chopper", "Chopper", "Washer", "Washer", "Seller", "Seller"};
+    private static final String[] LOCATIONS = { "Fruit-dept.","Bazar-Service"};
+//    private static final String[] EMP_NAMES = { "Amy", "Beth", "Chad", "Dan", "Elsa", "Flo"};
+//    private static final String[] empSkills = { "Chopper", "Chopper", "Washer", "Washer", "Seller", "Seller"};
 
-    private static final String[] REQUIRED_SKILLS = { "Seller", "General Staff" };
-    private static final String[] OPTIONAL_SKILLS = { "Chopper", "Washer" };
+//    private static final String[] REQUIRED_SKILLS = { "Seller", "General Staff" };
+//    private static final String[] OPTIONAL_SKILLS = { "Chopper", "Washer" };
 
     private static final Duration SHIFT_LENGTH = Duration.ofHours(7);
     private static final LocalTime MORNING_SHIFT_START_TIME = LocalTime.of(8, 0);
@@ -72,7 +68,7 @@ public class DemoDataGenerator {
             if (file.exists()) {
                 Employee[] employees = objMapper.readValue(file, Employee[].class);
                 employeeList = Arrays.asList(employees);
-                logger.log(Level.INFO, "File read successfully");
+//                logger.log(Level.INFO, "File read successfully");
                 logger.log(Level.INFO, employeeList.toString());
                 for (Employee employee : employeeList) {
                     logger.log(Level.INFO, employee.getName());
@@ -146,8 +142,8 @@ public class DemoDataGenerator {
         for (int i = 0; i < initialRosterLengthInDays; i++) {
             LocalDate date = currentDate.plusDays(i);
             if (date.getDayOfWeek() != DayOfWeek.SUNDAY) {
-                Set<Employee> employeesWithAvailabilitiesOnDay = pickSubset(employees, random, 4, 3, 2, 1);
-                logger.log(Level.INFO, employeesWithAvailabilitiesOnDay.toString()+"employeesWithAvailabilitiesOnDay");
+                Set<Employee> employeesWithAvailabilitiesOnDay = pickSubset(employees, random, 2);
+                logger.log(Level.INFO,"employeesWithAvailabilitiesOnDay--------------->" +employeesWithAvailabilitiesOnDay.toString());
                 for (Employee employee : employeesWithAvailabilitiesOnDay) {
                     AvailabilityType availabilityType = pickRandom(AvailabilityType.values(), random);
 //                    logger.log(Level.INFO, availabilityType.toString()+"availabilityType");
@@ -157,9 +153,14 @@ public class DemoDataGenerator {
             }
         }
         AtomicInteger countShift = new AtomicInteger();
+        logger.log(Level.INFO,"Count shift"+countShift);
         shifts.forEach(s -> s.setId(Integer.toString(countShift.getAndIncrement())));
         employeeSchedule.setAvailabilities(availabilities);
         employeeSchedule.setShifts(shifts);
+
+//        logger.log(Level.INFO,"Employee schedule Employees-------------------->"+employeeSchedule.getEmployees());
+//        logger.log(Level.INFO,"Employee schedule Shifts-------------------->"+employeeSchedule.getShifts());
+//        logger.log(Level.INFO,"Employee schedule Availabilities-------------------->"+employeeSchedule.getAvailabilities());
 
         return employeeSchedule;
     }
@@ -168,13 +169,14 @@ public class DemoDataGenerator {
         List<Shift> shifts = new LinkedList<>();
         for (String location : LOCATIONS) {
             List<LocalTime> shiftStartTimes = locationToShiftStartTimeListMap.get(location);
-            logger.log(Level.INFO,shiftStartTimes.toString()+"shiftStartTimes");
+//            logger.log(Level.INFO,shiftStartTimes.toString()+"shiftStartTimes");
             for (LocalTime shiftStartTime : shiftStartTimes) {
                 LocalDateTime shiftStartDateTime = date.atTime(shiftStartTime);
                 LocalDateTime shiftEndDateTime = shiftStartDateTime.plus(SHIFT_LENGTH);
                 shifts.addAll(generateShiftForTimeslot(shiftStartDateTime, shiftEndDateTime, location, random));
             }
         }
+        logger.log(Level.INFO,"===============> shifts"+shifts.toString());
         return shifts;
     }
 
@@ -198,6 +200,7 @@ public class DemoDataGenerator {
 //            }
             shifts.add(new Shift(timeslotStart, timeslotEnd, location));
         }
+
         return shifts;
     }
 
