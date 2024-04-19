@@ -9,15 +9,15 @@ import ai.timefold.solver.core.api.domain.solution.ProblemFactCollectionProperty
 import ai.timefold.solver.core.api.domain.valuerange.ValueRangeProvider;
 import ai.timefold.solver.core.api.score.buildin.hardsoft.HardSoftScore;
 import ai.timefold.solver.core.api.solver.SolverStatus;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
+@Data
 @PlanningSolution
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class EmployeeSchedule {
+
     @ProblemFactCollectionProperty
     private List<Availability> availabilities;
 
@@ -47,48 +47,24 @@ public class EmployeeSchedule {
         this.solverStatus = solverStatus;
     }
 
-    public ScheduleState getScheduleState() {
-        return scheduleState;
-    }
-
     public void setScheduleState(ScheduleState scheduleState) {
         this.scheduleState = scheduleState;
-    }
-
-    public List<Availability> getAvailabilities() {
-        return availabilities;
     }
 
     public void setAvailabilities(List<Availability> availabilities) {
         this.availabilities = availabilities;
     }
 
-    public List<Employee> getEmployees() {
-        return employees;
-    }
-
     public void setEmployees(List<Employee> employees) {
         this.employees = employees;
-    }
-
-    public List<Shift> getShifts() {
-        return shifts;
     }
 
     public void setShifts(List<Shift> shifts) {
         this.shifts = shifts;
     }
 
-    public HardSoftScore getScore() {
-        return score;
-    }
-
     public void setScore(HardSoftScore score) {
         this.score = score;
-    }
-
-    public SolverStatus getSolverStatus() {
-        return solverStatus;
     }
 
     public void setSolverStatus(SolverStatus solverStatus) {
