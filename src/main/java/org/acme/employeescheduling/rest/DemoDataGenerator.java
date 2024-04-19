@@ -6,6 +6,7 @@ import org.acme.employeescheduling.domain.*;
 
 import java.io.File;
 import java.time.*;
+import java.time.temporal.TemporalAdjusters;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.ConsoleHandler;
@@ -84,7 +85,6 @@ public class DemoDataGenerator {
                             logger.log(Level.INFO,shift.getEnd_time());
                         }
                     }
-
                 }
             } else {
                 logger.log(Level.INFO, "File not found");
@@ -97,8 +97,8 @@ public class DemoDataGenerator {
         int initialRosterLengthInDays = 14;
 
         LocalDate currentDate = LocalDate.now();
-        //LocalDate startDate = currentDate;
-        // LocalDate startDate = currentDate.with(TemporalAdjusters.next(DayOfWeek.SUNDAY));
+        LocalDate startOfWeek = currentDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+        LocalDate endOfWeek = startOfWeek.plusDays(6);
 
         ScheduleState scheduleState = new ScheduleState();
         scheduleState.setFirstDraftDate(currentDate);
@@ -114,6 +114,7 @@ public class DemoDataGenerator {
         for (String location : LOCATIONS) {
             locationToShiftStartTimeListMap.put(location, List.of(SHIFT_START_TIMES_COMBOS[shiftTemplateIndex]));
             shiftTemplateIndex = (shiftTemplateIndex + 1) % SHIFT_START_TIMES_COMBOS.length;
+            logger.log(Level.INFO,"Loc to shift map"+locationToShiftStartTimeListMap);
         }
 
         List<Employee> employees = new ArrayList<>();
@@ -131,27 +132,29 @@ public class DemoDataGenerator {
                 employees.add(employee);
             }*/
 
-
-
-
         employeeSchedule.setEmployees(employees);
 
         List<Availability> availabilities = new LinkedList<>();
         List<Shift> shifts = new LinkedList<>();
-        int count = 0;
-        for (int i = 0; i < initialRosterLengthInDays; i++) {
-            LocalDate date = currentDate.plusDays(i);
-            if (date.getDayOfWeek() != DayOfWeek.SUNDAY) {
-                Set<Employee> employeesWithAvailabilitiesOnDay = pickSubset(employees, random, 2);
-                logger.log(Level.INFO,"employeesWithAvailabilitiesOnDay--------------->" +employeesWithAvailabilitiesOnDay.toString());
-                for (Employee employee : employeesWithAvailabilitiesOnDay) {
-                    AvailabilityType availabilityType = pickRandom(AvailabilityType.values(), random);
-//                    logger.log(Level.INFO, availabilityType.toString()+"availabilityType");
-                    availabilities.add(new Availability(Integer.toString(count++), employee, date, availabilityType));
-                }
-                shifts.addAll(generateShiftsForDay(date, random));
-            }
-        }
+
+        shifts.addAll(generateShiftsForWeek(currentDate, random));
+
+        shifts.addAll(generateShiftsForDays(currentDate.plusDays(7), initialRosterLengthInDays - 7, random));
+
+//        int count = 0;
+//        for (int i = 0; i < initialRosterLengthInDays; i++) {
+//            LocalDate date = currentDate.plusDays(i);
+//            if (date.getDayOfWeek() != DayOfWeek.SUNDAY) {
+//                Set<Employee> employeesWithAvailabilitiesOnDay = pickSubset(employees, random, 5);
+//                logger.log(Level.INFO,"employeesWithAvailabilitiesOnDay--------------->" +employeesWithAvailabilitiesOnDay.toString());
+//                for (Employee employee : employeesWithAvailabilitiesOnDay) {
+//                    AvailabilityType availabilityType = pickRandom(AvailabilityType.values(), random);
+////                    logger.log(Level.INFO, availabilityType.toString()+"availabilityType");
+//                    availabilities.add(new Availability(Integer.toString(count++), employee, date, availabilityType));
+//                }
+//                shifts.addAll(generateShiftsForDay(date, random));
+//            }
+//        }
         AtomicInteger countShift = new AtomicInteger();
         logger.log(Level.INFO,"Count shift"+countShift);
         shifts.forEach(s -> s.setId(Integer.toString(countShift.getAndIncrement())));
@@ -165,25 +168,44 @@ public class DemoDataGenerator {
         return employeeSchedule;
     }
 
+    private List<Shift> generateShiftsForWeek(LocalDate startDate, Random random) {
+        List<Shift> shifts = new LinkedList<>();
+        for (LocalDate date = startDate; date.isBefore(startDate.plusDays(7)); date = date.plusDays(1)) {
+            if (date.getDayOfWeek() != DayOfWeek.SUNDAY) {
+                shifts.addAll(generateShiftsForDay(date, random));
+            }
+        }
+        return shifts;
+    }
+    private List<Shift> generateShiftsForDays(LocalDate startDate, int numDays, Random random) {
+        List<Shift> shifts = new LinkedList<>();
+        for (int i = 0; i < numDays; i++) {
+            LocalDate date = startDate.plusDays(i);
+            if (date.getDayOfWeek() != DayOfWeek.SUNDAY) {
+                shifts.addAll(generateShiftsForDay(date, random));
+            }
+        }
+        return shifts;
+    }
+
     private List<Shift> generateShiftsForDay(LocalDate date, Random random) {
         List<Shift> shifts = new LinkedList<>();
         for (String location : LOCATIONS) {
             List<LocalTime> shiftStartTimes = locationToShiftStartTimeListMap.get(location);
-//            logger.log(Level.INFO,shiftStartTimes.toString()+"shiftStartTimes");
             for (LocalTime shiftStartTime : shiftStartTimes) {
                 LocalDateTime shiftStartDateTime = date.atTime(shiftStartTime);
                 LocalDateTime shiftEndDateTime = shiftStartDateTime.plus(SHIFT_LENGTH);
                 shifts.addAll(generateShiftForTimeslot(shiftStartDateTime, shiftEndDateTime, location, random));
             }
         }
-        logger.log(Level.INFO,"===============> shifts"+shifts.toString());
+        logger.log(Level.INFO, "===============> shifts" + shifts.toString());
         return shifts;
     }
 
     private List<Shift> generateShiftForTimeslot(LocalDateTime timeslotStart, LocalDateTime timeslotEnd,
                                                  String location,
                                                  Random random) {
-        int shiftCount = 1;
+        int shiftCount = 2;
 
 //        if (random.nextDouble() > 0.9) {
 //            // generate an extra shift
