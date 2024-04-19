@@ -4,54 +4,18 @@ import java.util.Objects;
 import java.util.Set;
 
 import ai.timefold.solver.core.api.domain.lookup.PlanningId;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.Builder;
+import lombok.Data;
 
-import java.util.*;
-
-@JsonIgnoreProperties(ignoreUnknown = true)
+@Data
+@Builder
 public class Employee {
     @PlanningId
     private String name;
 
-    public String getPosition() {
-        return position;
-    }
+    private Set<Skill> skills;
 
-    public void setPosition(String position) {
-        this.position = position;
-    }
-
-    //    private String initials;
-    private String position;
-//    private List<Schedule> schedules;
-     private Set<String> skills;
-//    private String skills;
-
-    public Employee() {
-
-    }
-
-    public Employee(String name, Set<String> skills) {
-        this.name = name;
-        this.skills = skills;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Set<String> getSkills() {
-        return skills;
-    }
-
-    public void setSkills(Set<String> skills) {
-        this.skills = skills;
-    }
+    private StoreName domain;
 
     @Override
     public String toString() {

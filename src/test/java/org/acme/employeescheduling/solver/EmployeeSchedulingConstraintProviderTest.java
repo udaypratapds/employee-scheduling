@@ -1,21 +1,14 @@
 package org.acme.employeescheduling.solver;
 
-import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.Set;
 
 import jakarta.inject.Inject;
 
 import ai.timefold.solver.test.api.score.stream.ConstraintVerifier;
 
-import org.acme.employeescheduling.domain.Availability;
-import org.acme.employeescheduling.domain.AvailabilityType;
-import org.acme.employeescheduling.domain.Employee;
 import org.acme.employeescheduling.domain.EmployeeSchedule;
-import org.acme.employeescheduling.domain.Shift;
-import org.junit.jupiter.api.Test;
 
 import io.quarkus.test.junit.QuarkusTest;
 
@@ -29,7 +22,7 @@ class EmployeeSchedulingConstraintProviderTest {
     private static final LocalDateTime AFTERNOON_END_TIME = DAY_1.atTime(LocalTime.of(21, 0));
 
     @Inject
-    ConstraintVerifier<EmployeeSchedulingConstraintProvider, EmployeeSchedule> constraintVerifier;
+    ConstraintVerifier<CustomEmployeeSchedulingConstraintProvider, EmployeeSchedule> constraintVerifier;
 
 /*    @Test
     void testRequiredSkill() {

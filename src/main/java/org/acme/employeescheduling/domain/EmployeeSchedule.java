@@ -9,8 +9,14 @@ import ai.timefold.solver.core.api.domain.solution.ProblemFactCollectionProperty
 import ai.timefold.solver.core.api.domain.valuerange.ValueRangeProvider;
 import ai.timefold.solver.core.api.score.buildin.hardsoft.HardSoftScore;
 import ai.timefold.solver.core.api.solver.SolverStatus;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
 
 @PlanningSolution
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class EmployeeSchedule {
     @ProblemFactCollectionProperty
     private List<Availability> availabilities;
@@ -28,9 +34,6 @@ public class EmployeeSchedule {
     private ScheduleState scheduleState;
 
     private SolverStatus solverStatus;
-
-    // No-arg constructor required for Timefold
-    public EmployeeSchedule() {}
 
     public EmployeeSchedule(ScheduleState scheduleState, List<Availability> availabilities, List<Employee> employees, List<Shift> shifts) {
         this.scheduleState = scheduleState;

@@ -1,7 +1,11 @@
 [
   {
-    "initials": "DCB",
+    "name": "DCB",
     "position": "HEAD OF FRUIT",
+    "domain": "FRUIT",
+    "skills": [
+      "MANAGER"
+    ],
     "schedules": [
       {
         "schedule": [
@@ -38,8 +42,54 @@
     ]
   },
   {
-    "initials": "BSS",
+    "name": "AXB",
+    "position": "HEAD OF MEAT",
+    "domain": "MEAT",
+    "skills": [
+      "MANAGER"
+    ],
+    "schedules": [
+      {
+        "schedule": [
+          {
+            "days": [
+              "MO",
+              "TU",
+              "WE",
+              "TH",
+              "FR",
+              "SA"
+            ],
+            "start_time": "08:00",
+            "end_time": "15:00"
+          }
+        ]
+      },
+      {
+        "schedule": [
+          {
+            "days": [
+              "MO",
+              "TU",
+              "WE",
+              "TH",
+              "FR",
+              "SA"
+            ],
+            "start_time": "15:00",
+            "end_time": "22:00"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "BSS",
     "position": "SALESMAN FRUIT",
+    "domain": "FRUIT",
+    "skills": [
+      "SELLER"
+    ],
     "schedules": [
       {
         "schedule": [
@@ -94,8 +144,12 @@
     ]
   },
   {
-    "initials": "IRF",
-    "position": "SALESMAN FRUIT",
+    "name": "IRF",
+    "position": "SALESMAN MEAT",
+    "domain": "MEAT",
+    "skills": [
+      "SELLER"
+    ],
     "schedules": [
       {
         "schedule": [
@@ -165,8 +219,12 @@
     ]
   },
   {
-    "initials": "RLO",
+    "name": "RLO",
     "position": "SALESMAN FRUIT",
+    "domain": "FRUIT",
+    "skills": [
+      "SELLER"
+    ],
     "schedules": [
       {
         "schedule": [

@@ -5,7 +5,9 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.Data;
 
+@Data
 public class ScheduleState {
 
     private String tenantId;
@@ -19,17 +21,17 @@ public class ScheduleState {
     private LocalDate lastHistoricDate;
 
     @JsonIgnore
-    public boolean isHistoric(LocalDateTime dateTime) {
-        return dateTime.isBefore(getFirstPublishedDate().atTime(LocalTime.MIDNIGHT));
+    public boolean isHistoric(LocalTime time) {
+        return time.isBefore(LocalTime.MIDNIGHT);
     }
 
     @JsonIgnore
-    public boolean isDraft(LocalDateTime dateTime) {
-        return !dateTime.isBefore(getFirstDraftDate().atTime(LocalTime.MIDNIGHT));
+    public boolean isDraft(LocalTime dateTime) {
+        return !dateTime.isBefore(LocalTime.MIDNIGHT);
     }
 
     @JsonIgnore
-    public boolean isPublished(LocalDateTime dateTime) {
+    public boolean isPublished(LocalTime dateTime) {
         return !isHistoric(dateTime) && !isDraft(dateTime);
     }
 
@@ -56,49 +58,5 @@ public class ScheduleState {
     @JsonIgnore
     public LocalDate getFirstUnplannedDate() {
         return firstDraftDate.plusDays(draftLength);
-    }
-
-    // ************************************************************************
-    // Getters and setters
-    // ************************************************************************
-
-    public String getTenantId() {
-        return tenantId;
-    }
-
-    public void setTenantId(String tenantId) {
-        this.tenantId = tenantId;
-    }
-
-    public Integer getPublishLength() {
-        return publishLength;
-    }
-
-    public void setPublishLength(Integer publishNotice) {
-        this.publishLength = publishNotice;
-    }
-
-    public Integer getDraftLength() {
-        return draftLength;
-    }
-
-    public void setDraftLength(Integer draftLength) {
-        this.draftLength = draftLength;
-    }
-
-    public LocalDate getFirstDraftDate() {
-        return firstDraftDate;
-    }
-
-    public void setFirstDraftDate(LocalDate firstDraftDate) {
-        this.firstDraftDate = firstDraftDate;
-    }
-
-    public LocalDate getLastHistoricDate() {
-        return lastHistoricDate;
-    }
-
-    public void setLastHistoricDate(LocalDate lastHistoricDate) {
-        this.lastHistoricDate = lastHistoricDate;
     }
 }

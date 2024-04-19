@@ -26,6 +26,7 @@ import org.acme.employeescheduling.domain.EmployeeSchedule;
 import org.acme.employeescheduling.domain.ScheduleState;
 import org.acme.employeescheduling.rest.exception.EmployeeScheduleSolverException;
 import org.acme.employeescheduling.rest.exception.ErrorInfo;
+import org.acme.employeescheduling.service.DataService;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.enums.SchemaType;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
@@ -45,7 +46,7 @@ public class EmployeeScheduleResource {
 
     public static final String SINGLETON_SCHEDULE_ID = "1";
 
-    private final DemoDataGenerator dataGenerator;
+    private final DataService dataService;
 
     SolverManager<EmployeeSchedule, String> solverManager;
     SolutionManager<EmployeeSchedule, HardSoftScore> solutionManager;
@@ -54,11 +55,16 @@ public class EmployeeScheduleResource {
     private final ConcurrentMap<String, Job> jobIdToJob = new ConcurrentHashMap<>();
 
     @Inject
-    public EmployeeScheduleResource(SolverManager<EmployeeSchedule, String> solverManager,
-            SolutionManager<EmployeeSchedule, HardSoftScore> solutionManager, DemoDataGenerator dataGenerator) {
+    public EmployeeScheduleResource(
+            SolverManager<EmployeeSchedule,
+                    String> solverManager,
+            SolutionManager<EmployeeSchedule,
+                    HardSoftScore> solutionManager,
+            DataService dataService
+    ) {
         this.solverManager = solverManager;
         this.solutionManager = solutionManager;
-        this.dataGenerator = dataGenerator;
+        this.dataService = dataService;
     }
 
     @Operation(summary = "List the job IDs of all submitted schedules.")
@@ -80,7 +86,8 @@ public class EmployeeScheduleResource {
     @POST
     @Consumes({ MediaType.APPLICATION_JSON })
     @Produces(MediaType.TEXT_PLAIN)
-    public String solve(EmployeeSchedule problem) {
+    public String solve() {
+        EmployeeSchedule problem = dataService.getEmployeeSchedule();
         String jobId = UUID.randomUUID().toString();
         jobIdToJob.put(jobId, Job.ofSchedule(problem));
         solverManager.solveBuilder()
@@ -193,7 +200,7 @@ public class EmployeeScheduleResource {
     @Path("{jobId}/publish")
     @Produces(MediaType.APPLICATION_JSON)
     public void
-            publish(@Parameter(description = "The job ID returned by the POST method.") @PathParam("jobId") String jobId) {
+    publish(@Parameter(description = "The job ID returned by the POST method.") @PathParam("jobId") String jobId) {
         if (!getStatus(jobId).getSolverStatus().equals(SolverStatus.NOT_SOLVING)) {
             throw new IllegalStateException("Cannot publish a schedule while solving is in progress.");
         }
@@ -205,7 +212,7 @@ public class EmployeeScheduleResource {
         scheduleState.setLastHistoricDate(newHistoricDate);
         scheduleState.setFirstDraftDate(newDraftDate);
 
-        dataGenerator.addDraftShifts(schedule);
+        //dataGenerator.addDraftShifts(schedule);
         jobIdToJob.put(jobId, Job.ofSchedule(schedule));
     }
 
